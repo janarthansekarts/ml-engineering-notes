@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ml-engineering-notes",
+  "compatibility_date": "2025-04-01",
+  "assets": {
+    "directory": "build",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}
