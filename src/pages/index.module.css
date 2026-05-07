@@ -1,6 +1,5 @@
 .main {
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: 0;
 }
 
 .hero {
@@ -78,6 +77,8 @@
 
 .sections {
   padding: 3rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .sectionsTitle {
