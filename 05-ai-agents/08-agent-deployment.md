@@ -322,9 +322,9 @@ Production_Hardening:
       tool: "OpenTelemetry"
       spans:
         - "Task (root span)"
-        - "  └── Agent Loop Iteration"
-        - "      ├── LLM Call"
-        - "      └── Tool Execution"
+        - "  +-- Agent Loop Iteration"
+        - "      +-- LLM Call"
+        - "      +-- Tool Execution"
 ```
 
 ---

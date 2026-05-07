@@ -146,16 +146,16 @@ Triton:
   model_repository:
     structure: |
       model_repository/
-      ├── text_classifier/
-      │   ├── config.pbtxt
-      │   ├── 1/            # Version 1
-      │   │   └── model.onnx
-      │   └── 2/            # Version 2
-      │       └── model.onnx
-      ├── embedding_model/
-      │   ├── config.pbtxt
-      │   └── 1/
-      │       └── model.pt
+      +-- text_classifier/
+      |   +-- config.pbtxt
+      |   +-- 1/            # Version 1
+      |   |   +-- model.onnx
+      |   +-- 2/            # Version 2
+      |       +-- model.onnx
+      +-- embedding_model/
+      |   +-- config.pbtxt
+      |   +-- 1/
+      |       +-- model.pt
       
     config_example: |
       name: "text_classifier"
