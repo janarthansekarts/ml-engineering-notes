@@ -76,6 +76,20 @@ SLM_Landscape:
         - "Tool use built-in"
       deployment: "Single GPU, quantized CPU"
       
+    hermes_3:
+      provider: "Nous Research"
+      base: "Fine-tuned Llama 3 (8B, 70B, 405B)"
+      specialization: "Agent/tool-use/function-calling"
+      strengths:
+        - "Best open-weight model for AI agents and function calling"
+        - "95%+ valid structured JSON output (tool calls)"
+        - "Excellent system prompt following (roles, constraints)"
+        - "ChatML format with dedicated <tool_call> tokens"
+        - "Multi-turn tool use with coherent planning"
+      deployment: "Same as Llama 3 (vLLM, TGI, llama.cpp GGUF)"
+      when_to_choose: "Building self-hosted AI agents that need reliable tool use"
+      vs_base_llama: "10× better at function calling and structured output"
+      
   comparison_metrics:
     quality_per_dollar:
       phi_4_3_8b: "Best (tiny model, high quality)"

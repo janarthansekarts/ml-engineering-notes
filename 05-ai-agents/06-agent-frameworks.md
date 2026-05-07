@@ -378,6 +378,204 @@ Vercel_AI_SDK:
       });
 ```
 
+### Agent-Specialized Open-Weight Models (Self-Hosted)
+
+```yaml
+Agent_Models:
+  why: "Not every agent needs a $0.03/call API — self-hosted agent models 
+        reduce cost 30×, eliminate API dependency, and keep data private"
+  
+  hermes_3:
+    provider: "Nous Research"
+    what: "The gold standard open-weight model for AI agents"
+    base_model: "Llama 3 (fine-tuned specifically for tool use and agent behavior)"
+    sizes: ["8B (single GPU agent)", "70B (production quality)", "405B (frontier open)"]
+    
+    why_hermes_for_agents:
+      - "Trained specifically on function-calling and tool-use datasets"
+      - "ChatML format with dedicated <tool_call> / <tool_response> tokens"
+      - "95%+ valid JSON in function calls (matches GPT-4o reliability)"
+      - "Excellent system prompt adherence (roles, constraints, boundaries)"
+      - "Multi-turn tool use (plans across turns, remembers results)"
+      - "Knows WHEN to call tools vs answer directly (tool selection intelligence)"
+      
+    how_to_use:
+      prompt_format: |
+        <|im_start|>system
+        You are a helpful assistant with access to the following tools:
+        
+        {tools_json_schema}
+        
+        When you need to use a tool, respond with:
+        <tool_call>
+        {"name": "function_name", "arguments": {"param": "value"}}
+        </tool_call>
+        
+        When you have enough information, respond normally without tool calls.
+        <|im_end|>
+        <|im_start|>user
+        What's the weather in London and should I bring an umbrella?
+        <|im_end|>
+        <|im_start|>assistant
+        I'll check the weather for you.
+        <tool_call>
+        {"name": "get_weather", "arguments": {"city": "London", "units": "celsius"}}
+        </tool_call>
+        <|im_end|>
+        <|im_start|>tool
+        {"temperature": 12, "condition": "rainy", "humidity": 85}
+        <|im_end|>
+        <|im_start|>assistant
+        The weather in London is 12°C and rainy with 85% humidity.
+        Yes, definitely bring an umbrella!
+        <|im_end|>
+      
+      tool_definition_format: |
+        # Define tools as JSON Schema (same format as OpenAI function calling)
+        tools = [
+          {
+            "type": "function",
+            "function": {
+              "name": "get_weather",
+              "description": "Get current weather for a city",
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "city": {"type": "string", "description": "City name"},
+                  "units": {"type": "string", "enum": ["celsius", "fahrenheit"]}
+                },
+                "required": ["city"]
+              }
+            }
+          }
+        ]
+      
+      with_vllm: |
+        # Serve Hermes 3 with vLLM (production serving)
+        # Install: pip install vllm
+        
+        # Start server:
+        # vllm serve NousResearch/Hermes-3-Llama-3.1-8B \
+        #   --dtype auto --max-model-len 8192 \
+        #   --tool-call-parser hermes
+        
+        # vLLM has NATIVE Hermes tool-call parsing support!
+        # Client code (OpenAI-compatible API):
+        from openai import OpenAI
+        client = OpenAI(base_url="http://localhost:8000/v1", api_key="dummy")
+        
+        response = client.chat.completions.create(
+            model="NousResearch/Hermes-3-Llama-3.1-8B",
+            messages=[
+                {"role": "system", "content": "You are a helpful agent with tool access."},
+                {"role": "user", "content": "What's the weather in Tokyo?"},
+            ],
+            tools=tools,  # Same format as OpenAI tools
+            tool_choice="auto",
+        )
+        
+        # Response includes tool_calls just like OpenAI API!
+        if response.choices[0].message.tool_calls:
+            tool_call = response.choices[0].message.tool_calls[0]
+            print(f"Call: {tool_call.function.name}({tool_call.function.arguments})")
+      
+      with_langchain: |
+        # Use Hermes with LangChain/LangGraph (same as any chat model)
+        from langchain_openai import ChatOpenAI
+        from langchain.tools import tool
+        
+        # Point to local vLLM server running Hermes
+        llm = ChatOpenAI(
+            base_url="http://localhost:8000/v1",
+            api_key="not-needed",
+            model="NousResearch/Hermes-3-Llama-3.1-8B",
+        )
+        
+        @tool
+        def search_database(query: str) -> str:
+            """Search the customer database by name or email."""
+            return db.search(query)
+        
+        # Bind tools — works exactly like GPT-4o/Claude
+        llm_with_tools = llm.bind_tools([search_database])
+        response = llm_with_tools.invoke("Find customer John Smith")
+      
+      with_ollama: |
+        # Simplest local setup — Ollama (one command)
+        # Install Ollama: https://ollama.ai
+        
+        # Pull Hermes model:
+        # ollama pull adrienbrault/nous-hermes2pro:Q4_K_M
+        
+        # Or for Hermes 3:
+        # ollama pull hermes3:8b
+        
+        # Use via API (OpenAI compatible):
+        from openai import OpenAI
+        client = OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
+        
+        response = client.chat.completions.create(
+            model="hermes3:8b",
+            messages=[{"role": "user", "content": "Search for flights to NYC"}],
+            tools=tools,
+        )
+      
+      with_llama_cpp: |
+        # CPU inference (no GPU needed) — good for development
+        # Download GGUF: NousResearch/Hermes-3-Llama-3.1-8B-GGUF
+        # Use Q4_K_M quantization (best quality/size balance)
+        
+        # Run with llama-server:
+        # llama-server -m hermes-3-8b-Q4_K_M.gguf \
+        #   --port 8080 --n-gpu-layers 0
+        
+        # Same OpenAI-compatible API as vLLM/Ollama
+    
+    practical_tips:
+      - "Always include tool descriptions in system prompt (Hermes uses them for selection)"
+      - "Use ChatML format (<|im_start|> tokens) for best results"
+      - "For complex agents: Hermes 70B matches Claude Sonnet on tool use"
+      - "For simple tool routing: Hermes 8B is sufficient (fast + cheap)"
+      - "GGUF Q4_K_M works well for development (CPU, no GPU needed)"
+      - "vLLM --tool-call-parser hermes gives OpenAI-compatible tool_calls in response"
+      - "Works with LangChain, LangGraph, CrewAI via standard OpenAI-compatible interface"
+      
+    cost_comparison:
+      hermes_8b_self_hosted:
+        hardware: "1× L4 ($0.80/hr)"
+        throughput: "100 agent calls/minute"
+        cost_per_call: "$0.00013"
+      hermes_70b_self_hosted:
+        hardware: "1× H100 ($8/hr)"
+        throughput: "30 agent calls/minute"
+        cost_per_call: "$0.004"
+      gpt_4o_api:
+        cost_per_call: "$0.03-0.10 (depending on tokens)"
+        comparison: "Hermes 8B is 230× cheaper, 70B is 7-25× cheaper"
+      
+  other_agent_models:
+    functionary:
+      provider: "MeetKai"
+      what: "Trained on OpenAI function-calling format (drop-in replacement)"
+      strength: "Exact same JSON format as OpenAI tools API"
+      
+    gorilla:
+      provider: "UC Berkeley (Gorilla LLM)"
+      what: "Trained on API documentation (calls real-world APIs)"
+      strength: "Can call APIs it hasn't seen (generalizes from docs)"
+      
+    nexus_raven:
+      provider: "Nexusflow"
+      what: "Function-calling model with zero-shot tool use"
+      strength: "Works with unseen tools (just from description)"
+      
+  model_selection_for_agents:
+    simple_routing: "Hermes 8B / Functionary 7B (fast, cheap, single tool choice)"
+    complex_planning: "Hermes 70B (multi-step plans with tools)"
+    maximum_quality: "Claude 4 / GPT-5 API (when cost isn't the constraint)"
+    hybrid: "Hermes 8B for routing + frontier model for complex reasoning"
+```
+
 ### Framework Selection Guide
 
 ```python
@@ -398,6 +596,12 @@ def select_framework(requirements: dict) -> str:
     # TypeScript → Vercel AI SDK
     if language == "typescript":
         return "Vercel AI SDK"
+    
+    # Self-hosted / cost-sensitive / privacy-required → Hermes
+    if requirements.get("self_hosted", False) or requirements.get("data_privacy", False):
+        volume = requirements.get("daily_calls", 0)
+        if volume > 10000 or requirements.get("air_gapped", False):
+            return "Hermes 3 (8B/70B) + vLLM + LangGraph"
     
     # Quick prototype with file/code needs → OpenAI Assistants
     if prototype_speed and not provider_flexibility and not multi_agent:
