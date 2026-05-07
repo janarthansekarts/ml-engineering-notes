@@ -118,6 +118,7 @@ const config = {
               { label: 'Networking Deep Dive', href: 'https://networking-deep-dive.janarthansekarts.workers.dev/' },
               { label: 'Observability', href: 'https://observability-notes.janarthansekarts.workers.dev/' },
               { label: 'Learn AI & ML', href: 'https://learn-ai-ml.janarthansekarts.workers.dev/' },
+              { label: 'Security Engineering', href: 'https://security-engineering-notes.janarthansekarts.workers.dev/' },
             
             ],
           },
