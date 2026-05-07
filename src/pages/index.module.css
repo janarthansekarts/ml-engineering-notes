@@ -1,34 +1,83 @@
 .main {
-  padding: 2rem;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
 .hero {
   text-align: center;
   padding: 4rem 2rem;
+  background: linear-gradient(135deg, #78350f 0%, #d97706 100%);
+  color: white;
+}
+
+[data-theme='dark'] .hero {
+  background: linear-gradient(135deg, #451a03 0%, #b45309 100%);
 }
 
 .heroTitle {
-  font-size: 2.5rem;
+  font-size: 2.8rem;
+  font-weight: 800;
   margin-bottom: 1rem;
 }
 
 .heroSubtitle {
   font-size: 1.2rem;
-  color: var(--ifm-color-emphasis-700);
+  opacity: 0.9;
   max-width: 700px;
-  margin: 0 auto 1rem;
+  margin: 0 auto 1.5rem;
+}
+
+.heroBadges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.heroBadge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  backdrop-filter: blur(4px);
 }
 
 .heroMeta {
   font-size: 0.9rem;
-  color: var(--ifm-color-emphasis-600);
+  opacity: 0.7;
   font-style: italic;
 }
 
+.statsBar {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  padding: 2rem;
+  background: var(--ifm-background-surface-color);
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+  flex-wrap: wrap;
+}
+
+.statItem {
+  text-align: center;
+}
+
+.statNumber {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--ifm-color-primary);
+}
+
+.statLabel {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+}
+
 .sections {
-  padding: 2rem 0;
+  padding: 3rem 2rem;
 }
 
 .sectionsTitle {
@@ -38,7 +87,7 @@
 
 .sectionsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
@@ -47,16 +96,17 @@
   flex-direction: column;
   align-items: center;
   padding: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 12px;
+  border: 1px solid var(--ifm-toc-border-color);
   text-decoration: none;
   color: inherit;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.2s;
 }
 
 .sectionCard:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.15);
+  border-color: var(--ifm-color-primary);
   text-decoration: none;
   color: inherit;
 }
@@ -68,6 +118,7 @@
 
 .sectionName {
   font-size: 1rem;
+  font-weight: 700;
   margin: 0.5rem 0;
   text-align: center;
 }
@@ -79,7 +130,8 @@
 }
 
 .crossLinks {
-  padding: 3rem 0;
+  padding: 3rem 2rem;
+  background: var(--ifm-background-surface-color);
   text-align: center;
 }
 
