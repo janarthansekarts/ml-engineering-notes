@@ -119,6 +119,7 @@ const config = {
               { label: 'Observability', href: 'https://observability-notes.janarthansekarts.workers.dev/' },
               { label: 'Learn AI & ML', href: 'https://learn-ai-ml.janarthansekarts.workers.dev/' },
               { label: 'Security Engineering', href: 'https://security-engineering-notes.janarthansekarts.workers.dev/' },
+              { label: 'Blockchain & Web3', href: 'https://blockchain-web3-notes.janarthansekarts.workers.dev/' },
             
             ],
           },
